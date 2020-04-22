@@ -5,19 +5,27 @@
 
 class TTerm_SPILCD : public TTermbase, public Print {
 private:
-    size_t DrawGlyph( int x, int y, uint8_t Character, uint16_t Attrib );
+    void DrawGlyph( int x, int y, char Character, uint16_t Attrib );
 
     uint16_t FGColorFromAttrib( uint16_t Attrib );
     uint16_t BGColorFromAttrib( uint16_t Attrib );
 
+    void DrawCharacter( int x, int y, char Character );
+    void DrawBlankCharacter( int x, int y );
+    void DrawUnderline( int x, int y );
+    void DrawStrike( int x, int y );
+
+    int _FontSize;
     int _FontWidth;
     int _FontHeight;
-public:
-    TTerm_SPILCD( int DisplayWidth, int DisplayHeight, int FontWidth, int FontHeight );
 
-    size_t write( uint8_t Data ) {
-        return TTermbase::write( Data );
-    }
+    uint16_t FGColor;
+    uint16_t BGColor;
+public:
+    void Begin( int DisplayWidth, int DisplayHeight, int FontSize );
+
+    void Update( void );
+    size_t write( uint8_t Data );
 };
 
 
