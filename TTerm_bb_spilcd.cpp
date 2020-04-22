@@ -38,6 +38,8 @@ void TTerm_SPILCD::DrawGlyph( int x, int y, char Character, uint16_t Attrib ) {
     FGColor = FGColorFromAttrib( Attrib );
     BGColor = BGColorFromAttrib( Attrib );
 
+    Character = ( Character == 0 ) ? ' ' : Character;
+
     if ( Attrib & Attrib_Reverse ) {
         // Reverse foreground and background colours
         Temp = FGColor;
@@ -47,7 +49,6 @@ void TTerm_SPILCD::DrawGlyph( int x, int y, char Character, uint16_t Attrib ) {
 
     if ( ! ( Attrib & Attrib_Conceal ) ) {
         // Character is visible
-
         DrawCharacter( x, y, Character );
 
         if ( Attrib & Attrib_Underline ) {
