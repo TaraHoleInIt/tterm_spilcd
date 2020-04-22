@@ -38,6 +38,7 @@ void TTerm_SPILCD::DrawGlyph( int x, int y, char Character, uint16_t Attrib ) {
     FGColor = FGColorFromAttrib( Attrib );
     BGColor = BGColorFromAttrib( Attrib );
 
+    // bb_spilcd Doesn't render character 0, so instead we'll change it into a blank space
     Character = ( Character == 0 ) ? ' ' : Character;
 
     if ( Attrib & Attrib_Reverse ) {
@@ -69,10 +70,12 @@ uint16_t TTerm_SPILCD::FGColorFromAttrib( uint16_t Attrib ) {
     int g = 0;
     int b = 0;
 
+    // Start out with full intensity
     r = ( Attrib & Attrib_FR ) ? 31 : 0;
     g = ( Attrib & Attrib_FG ) ? 63 : 0;
     b = ( Attrib & Attrib_FB ) ? 31 : 0;
 
+    // Halve intensity if the intensity attribute is not set
     r>>= ( ! ( Attrib & Attrib_I ) ) ? 1 : 0;
     g>>= ( ! ( Attrib & Attrib_I ) ) ? 1 : 0;
     b>>= ( ! ( Attrib & Attrib_I ) ) ? 1 : 0;
@@ -85,6 +88,7 @@ uint16_t TTerm_SPILCD::BGColorFromAttrib( uint16_t Attrib ) {
     int g = 0;
     int b = 0;
 
+    // For now, all background colours should be full intensity
     r = ( Attrib & Attrib_BR ) ? 31 : 0;
     g = ( Attrib & Attrib_BG ) ? 63 : 0;
     b = ( Attrib & Attrib_BB ) ? 31 : 0;
