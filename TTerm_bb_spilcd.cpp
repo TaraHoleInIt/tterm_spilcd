@@ -5,27 +5,12 @@
 #include <Arduino.h>
 #include <bb_spi_lcd.h>
 #include <TTerm_bb_spilcd.h>
+#include "f437.h"
 
-void TTerm_SPILCD::Begin( int DisplayWidth, int DisplayHeight, int FontSize ) {
-    switch ( FontSize ) {
-        case FONT_NORMAL: {
-            _FontWidth = 8;
-            _FontHeight = 8;
-            break;
-        }
-        case FONT_SMALL: {
-            _FontWidth = 6;
-            _FontHeight = 8;
-            break;
-        }
-        default: {
-            _FontWidth = 0;
-            _FontHeight = 0;
-            break;
-        }
-    };
-
-    _FontSize = FontSize;
+void TTerm_SPILCD::Begin( int DisplayWidth, int DisplayHeight, F437* Font ) {
+    _Font = Font;
+    _FontWidth = Font->GetFontWidth( );
+    _FontHeight = Font->GetFontHeight( );
     FGColor = 0;
     BGColor = 0;
 
@@ -33,11 +18,18 @@ void TTerm_SPILCD::Begin( int DisplayWidth, int DisplayHeight, int FontSize ) {
 }
 
 void TTerm_SPILCD::DrawGlyph( int x, int y, char Character, uint16_t Attrib ) {
+    uint16_t Buffer[ _FontWidth * _FontHeight ];
     uint16_t Temp = 0;
 
     FGColor = FGColorFromAttrib( Attrib );
     BGColor = BGColorFromAttrib( Attrib );
 
+    _Font->Render( Character, Buffer, false, false, FGColor, BGColor );
+
+    spilcdSetPosition( x, y, _FontWidth, _FontHeight, 1 );
+    spilcdWriteDataBlock( ( uint8_t* ) Buffer, _FontWidth * _FontHeight * 2, 1 );
+
+#if 0
     // bb_spilcd Doesn't render character 0, so instead we'll change it into a blank space
     Character = ( Character == 0 ) ? ' ' : Character;
 
@@ -63,6 +55,7 @@ void TTerm_SPILCD::DrawGlyph( int x, int y, char Character, uint16_t Attrib ) {
         // Character is invisible
         DrawBlankCharacter( x, y );
     }
+#endif
 }
 
 uint16_t TTerm_SPILCD::FGColorFromAttrib( uint16_t Attrib ) {
